@@ -44,7 +44,7 @@ frameMax: 8,
 scale: 3.0,
 offset:{
     x:120,
-    y:130
+    y:150
  },
 
  Sprites:{
@@ -57,6 +57,11 @@ offset:{
         frameMax: 8,
         
     },
+    runb :{
+        imageSrc: './img/Sprites/run_backward.png',
+        frameMax: 8,
+        
+    },
     jump :{
         imageSrc: './img/Sprites/Jump.png',
         frameMax: 2,
@@ -65,7 +70,18 @@ offset:{
         imageSrc: './img/Sprites/Fall.png',
         frameMax: 2,
         
+    },attack1:{
+        imageSrc: './img/Sprites/Attack1.png',
+        frameMax: 4,
+        
+    }
+ },attackBox:{
+    offset:{
+        x:170,
+        y:70
     },
+    width:100,
+    height:50
  }
 })
 
@@ -82,7 +98,51 @@ color: 'blue',
 offset:{
     x:-50,
     y:0
-}
+},
+imageSrc: './img/Sprites_3/Idle.png',
+frameMax: 10,
+scale: 3.0,
+offset:{
+    x:120,
+    y:130
+ },
+
+ Sprites:{
+    idle :{
+        imageSrc: './img/Sprites_3/Idle.png',
+        frameMax: 10
+    },
+    run :{
+        imageSrc: './img/Sprites_3/Run.png',
+        frameMax: 8,
+        
+    },
+    run_forward:{
+        imageSrc: './img/Sprites_3/Run_forward.png',
+        frameMax: 8,
+    },
+    jump :{
+        imageSrc: './img/Sprites_3/Jump.png',
+        frameMax: 3,
+        
+    },fall:{
+        imageSrc: './img/Sprites_3/Fall.png',
+        frameMax: 3,
+        
+    },attack1:{
+        imageSrc: './img/Sprites_3/Attack.png',
+        frameMax: 13,
+        
+    }
+ },
+ attackBox:{
+    offset:{
+        x:-70,
+        y:30
+    },
+    width:100,
+    height:50
+ }
 
 })
 
@@ -114,7 +174,7 @@ function animate() {
     background.update()
     shop.update()
     player.update()
-    //enemy.update()
+    enemy.update()
 
     player.velocity.x = 0
     enemy.velocity.x = 0
@@ -122,7 +182,7 @@ function animate() {
     //player movement
     if (keys.a.pressed && player.lastkey === 'a'){
         player.velocity.x = -5
-        player.switchSprite('run')
+        player.switchSprite('runb')
     }else if(keys.d.pressed && player.lastkey === 'd'){
         player.velocity.x = 5
         player.switchSprite('run')
@@ -140,8 +200,19 @@ function animate() {
     //Enemy movoment
     if (keys.ArrowLeft.pressed && enemy.lastkey === 'ArrowLeft'){
         enemy.velocity.x = -5
+        enemy.switchSprite('run_forward')
     }else if(keys.ArrowRight.pressed && enemy.lastkey === 'ArrowRight'){
         enemy.velocity.x = 5
+        enemy.switchSprite('run')
+    }else{
+        enemy.switchSprite('idle')
+    }
+
+    //jumping
+    if(enemy.velocity.y < 0){
+        enemy.switchSprite('jump')
+    }else if(enemy.velocity.y > 0){
+        enemy.switchSprite('fall')
     }
 
     //detect for collision
@@ -149,11 +220,17 @@ if(rectangularCollision({
     rectangle1: player,
     rectangle2: enemy
 })
-    && player.isAttacking
+    && 
+    player.isAttacking && player.framesCurrent === 2
 ){
     player.isAttacking = false
     enemy.health -= 20
     document.querySelector('#enemyHealth').style.width = enemy.health + '%'
+}
+
+//if player misses
+if(player.isAttacking && player.framesCurrent === 2){
+    player.isAttacking = false
 }
 
 if(rectangularCollision({
@@ -204,7 +281,7 @@ window.addEventListener('keydown', (event) =>{
                 enemy.velocity.y = -20
                 break
             case 'ArrowDown':
-                enemy.isAttacking = true
+                enemy.attack()
                 break
         
         }
