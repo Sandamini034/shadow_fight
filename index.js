@@ -19,10 +19,10 @@ const background= new Sprite({
 const shop = new Sprite({
     position:{
         x:850,
-        y:300
+        y:400
     },
     imageSrc: './img/Knight-Idle-Sheet.png',
-    scale: 2.75,
+    scale: 0.1,
     frameMax : 4
 })
 
@@ -74,13 +74,23 @@ offset:{
         imageSrc: './img/Sprites/Attack1.png',
         frameMax: 4,
         
+    },
+    takeHit:{
+        imageSrc: './img/Sprites/Take Hit - white silhouette.png',
+        frameMax: 4,
+        
+    },
+    death:{
+        imageSrc: './img/Sprites/Death.png',
+        frameMax: 6,
+        
     }
  },attackBox:{
     offset:{
-        x:170,
-        y:70
+        x:-50,
+        y:200 
     },
-    width:100,
+    width:180,
     height:50
  }
 })
@@ -103,7 +113,7 @@ imageSrc: './img/Sprites_3/Idle.png',
 frameMax: 10,
 scale: 3.0,
 offset:{
-    x:120,
+    x:-150,
     y:130
  },
 
@@ -133,12 +143,20 @@ offset:{
         imageSrc: './img/Sprites_3/Attack.png',
         frameMax: 13,
         
+    },takeHit:{
+        imageSrc: './img/Sprites_3/Get hit.png',
+        frameMax: 3,
+    },
+    death:{
+        imageSrc: './img/Sprites_3/Death.png',
+        frameMax: 18,
+        
     }
  },
  attackBox:{
     offset:{
-        x:-70,
-        y:30
+        x:-100,
+        y:150
     },
     width:100,
     height:50
@@ -173,6 +191,8 @@ function animate() {
     c.fillRect(0,0,canvas.width, canvas.height)
     background.update()
     shop.update()
+    c.fillStyle = 'rgba(255, 255, 255, 0.1)'
+    c.fillRect(0,0,canvas.width, canvas.height)
     player.update()
     enemy.update()
 
@@ -215,34 +235,41 @@ function animate() {
         enemy.switchSprite('fall')
     }
 
-    //detect for collision
+    //detect for collision & enemy gets hit
 if(rectangularCollision({
     rectangle1: player,
     rectangle2: enemy
 })
     && 
-    player.isAttacking && player.framesCurrent === 2
+    player.isAttacking && player.framesCurrent === 3
 ){
+    enemy.takeHit()
     player.isAttacking = false
-    enemy.health -= 20
     document.querySelector('#enemyHealth').style.width = enemy.health + '%'
 }
 
 //if player misses
-if(player.isAttacking && player.framesCurrent === 2){
+if(player.isAttacking && player.framesCurrent === 3){
     player.isAttacking = false
 }
 
+//this where our player gets hit
 if(rectangularCollision({
     rectangle1: enemy,
     rectangle2: player
 })
-    && enemy.isAttacking
+    && enemy.isAttacking && enemy.framesCurrent ===4
 ){
+    player.takeHit()
     enemy.isAttacking = false
-    player.health -= 20
     document.querySelector('#playerHealth').style.width = player.health + '%'
 }
+
+//if enemy misses
+if(enemy.isAttacking && enemy.framesCurrent === 4){
+    enemy.isAttacking = false
+}
+
 //end game base on health
 if(enemy.health <=0 || player.health <=0){
 determineWinner({player, enemy, timerId})
@@ -252,6 +279,8 @@ determineWinner({player, enemy, timerId})
 animate()
 
 window.addEventListener('keydown', (event) =>{
+   if(!player.dead){
+   
     switch(event.key){
         case 'd':
             keys.d.pressed = true
@@ -267,8 +296,11 @@ window.addEventListener('keydown', (event) =>{
         case ' ':
             player.attack()
             break
+        }
+    }
 
-
+    if(!enemy.dead){
+        switch(event.key){
             case 'ArrowRight':
                 keys.ArrowRight.pressed = true
                 enemy.lastkey = 'ArrowRight'
@@ -283,8 +315,8 @@ window.addEventListener('keydown', (event) =>{
             case 'ArrowDown':
                 enemy.attack()
                 break
-        
         }
+    }
 })
 
 window.addEventListener('keyup', (event) =>{

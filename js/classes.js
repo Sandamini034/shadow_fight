@@ -86,6 +86,7 @@ class Fighter extends Sprite {
         this.framesElapsed = 0
         this.frameHold = 5
         this.Sprites = Sprites
+        this.dead = false
 
         for (const sprite in this.Sprites){
             Sprites[sprite].image = new Image()
@@ -95,14 +96,16 @@ class Fighter extends Sprite {
 
     update(){
         this.draw()
+        if (!this.dead)
         this.animateFrames()
 
          //attack boxes
        
-        this.attackBox.position.x = this.position.x + this.attackBox.offset.x
-        this.attackBox.position.y = this.position.y + this.attackBox.offset.y
+         this.attackBox.position.x = (this.position.x - this.offset.x) + this.attackBox.offset.x
+         this.attackBox.position.y = (this.position.y - this.offset.y) + this.attackBox.offset.y
+         
         
-        c.fillRect(this.attackBox.position.x, this.attackBox.position.y, this.attackBox.width, this.attackBox.height)
+        //c.fillRect(this.attackBox.position.x, this.attackBox.position.y, this.attackBox.width, this.attackBox.height)
 
         this.position.x += this.velocity.x
         this.position.y += this.velocity.y
@@ -119,10 +122,34 @@ class Fighter extends Sprite {
         this.isAttacking = true
     }
 
+    takeHit(){
+            this.health -= 20
+
+            if(this.health <= 0){
+                this.switchSprite('death')
+                    }else{
+                        this.switchSprite('takeHit')
+                    }
+                }
+
     switchSprite(sprite){
+        if(this.image === this.Sprites.death.image){
+            if(this.framesCurrent === this.Sprites.death.frameMax -1)
+            this.dead = true
+            return
+        }
+
+        //overriding all other animations with the attack animation
         if(this.image === this.Sprites.attack1.image &&
             this.framesCurrent < this.Sprites.attack1.frameMax -1)
             return
+
+         //override when fighter gets hit
+         if(this.image === this.Sprites.takeHit.image && 
+            this.framesCurrent < this.Sprites.takeHit.frameMax -1
+        )
+            retutrn
+
         switch(sprite){
             case 'idle':
                 if (this.image !== this.Sprites.idle.image){
@@ -175,6 +202,22 @@ class Fighter extends Sprite {
                             this.framesCurrent = 0
                         }
                         break;
+                    
+                        case 'takeHit':
+                            if (this.image !== this.Sprites.takeHit.image){
+                                this.image = this.Sprites.takeHit.image
+                                this.frameMax = this.Sprites.takeHit.frameMax
+                                this.framesCurrent = 0
+                            }
+                            break;
+
+                            case 'death':
+                                if (this.image !== this.Sprites.death.image){
+                                    this.image = this.Sprites.death.image
+                                    this.frameMax = this.Sprites.death.frameMax
+                                    this.framesCurrent = 0
+                                }
+                                break;
         }
     }
 }
