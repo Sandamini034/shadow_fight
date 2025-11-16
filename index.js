@@ -87,7 +87,7 @@ offset:{
     }
  },attackBox:{
     offset:{
-        x:-50,
+        x:-25,
         y:200 
     },
     width:180,
@@ -158,7 +158,7 @@ offset:{
         x:-100,
         y:150
     },
-    width:100,
+    width:150,
     height:50
  }
 
@@ -244,7 +244,7 @@ if(rectangularCollision({
     player.isAttacking && player.framesCurrent === 3
 ){
     enemy.takeHit()
-    player.isAttacking = false
+    player.hasHit = true 
     document.querySelector('#enemyHealth').style.width = enemy.health + '%'
 }
 
@@ -261,7 +261,7 @@ if(rectangularCollision({
     && enemy.isAttacking && enemy.framesCurrent ===4
 ){
     player.takeHit()
-    enemy.isAttacking = false
+    enemy.hasHit = true
     document.querySelector('#playerHealth').style.width = player.health + '%'
 }
 
