@@ -1,3 +1,3 @@
 # shadow_fight
-##Live Demo
-shadow-fight.netlify.app
+##Live Demo:
+http://shadow-fight.netlify.app
