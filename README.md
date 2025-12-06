@@ -1,5 +1,3 @@
 # shadow_fight
-gaming project
-
-#Live Demo
+Live Demo
 shadow-fight.netlify.app
