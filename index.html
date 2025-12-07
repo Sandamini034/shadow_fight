@@ -96,6 +96,30 @@
     Arrow Up – Jump<br>
     Arrow Down – Soul Attack<br>
 </div>
+<div id="mobileWarning" style="
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    font-size: 22px;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+">
+    This game is best played on a computer (keyboard required).
+</div>
+
+<script>
+if (/Mobi|Android/i.test(navigator.userAgent)) {
+    document.getElementById("mobileWarning").style.display = "flex";
+}
+</script>
+
         <canvas></canvas> 
     </div>
     
